@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.eamon.dao.BrandDao">
+    <resultMap id="brandMap_xml" type="brand">
+        <result column="brand_name" property="brandName"/>
+        <result column="company_name" property="companyName"/>
+    </resultMap>
+    <select id="pagination" resultMap="brandMap_xml">
+        select * from tb_brand
+        <where>
+            <if test="pageParam.brandName != null and pageParam.brandName != ''">
+                and brand_name like concat("%",#{pageParam.brandName},"%")
+            </if>
+            <if test="pageParam.companyName != null and pageParam.companyName != ''">
+                and company_name like concat("%",#{pageParam.companyName},"%")
+            </if>
+            <if test="pageParam.status != null">
+                and status = #{pageParam.status}
+            </if>
+        </where>
+         limit #{offset},#{pageParam.pageSize}
+    </select>
+
+    <select id="totalBrands" resultType="int">
+        select count(*) from tb_brand
+        <where>
+            <if test="brandName != null and brandName != ''">
+                and brand_name like concat("%",#{brandName},"%")
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and company_name like concat("%",#{companyName},"%")
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <delete id="delete">
+        delete from tb_brand where
+            <foreach collection="ids" item="id" open=" id in (" separator="," close=")">
+                #{id}
+            </foreach>
+    </delete>
+</mapper>
